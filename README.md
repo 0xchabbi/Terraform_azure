@@ -18,15 +18,15 @@ Create a free Azure subscription
 -> https://azure.microsoft.com/free/?ref=microsoft.com&utm_source=microsoft.com&utm_medium=docs&utm_campaign=visualstudio
 
 Configure Terraform in your preferred environment
-->https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-bash
-->https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-powershell
-->https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-windows-bash
-->https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-windows-powershell
-->https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/azure-get-started
+-> https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-bash
+-> https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-powershell
+-> https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-windows-bash
+-> https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-windows-powershell
+-> https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/azure-get-started
 
 
 $ git clone https://git.me2digital.com/b.chabbi/DemoSiemens.git
-$ cd ../path/to/the/file
+$ cd ./DemoSiemens
 
 $az login
 $terraform init
