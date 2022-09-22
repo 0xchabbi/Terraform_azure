@@ -28,9 +28,9 @@ Configure Terraform in your preferred environment
 $ git clone https://git.me2digital.com/b.chabbi/DemoSiemens.git
 $ cd ./DemoSiemens
 
-$az login
-$terraform init
-$terraform plan
-$terraform apply
+$ az login
+$ terraform init
+$ terraform plan
+$ terraform apply
 
 Check your Azure subscribtion
