@@ -27,7 +27,7 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name   = azurerm_resource_group.rg1.name
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   https_only            = true
-  site_config {             #das der plan erstellt wird ohne statuscode=0
+  site_config {             #that solves the error statuscode=0
     minimum_tls_version = "1.2"
     always_on           = false
   }
