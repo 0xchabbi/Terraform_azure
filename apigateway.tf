@@ -38,6 +38,7 @@ resource "azurerm_public_ip" "pip1" {
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
   sku                 = "Standard"
+  domain_name_label = "my-test-81772"
 }
 
 
@@ -94,6 +95,7 @@ route {
     frontend_ip_configuration_name = var.frontend_ip_configuration_name
     frontend_port_name             = var.frontend_port_name
     protocol                       = "Http"
+    host_names = [ "my-test-81772.westeurope.cloudapp.azure.com" ]
   }
 
   request_routing_rule {
@@ -102,10 +104,11 @@ route {
     http_listener_name         = var.listener_name
     backend_address_pool_name  = var.backend_address_pool_name
     backend_http_settings_name = var.http_setting_name
+    priority = 10
   }
 }
 
-resource "azurerm_network_interface" "nic" {
+/*resource "azurerm_network_interface" "nic" {
   count = 2
   name                = "nic-${count.index+1}"
   location            = azurerm_resource_group.rg1.location
@@ -124,14 +127,14 @@ resource "azurerm_network_interface_application_gateway_backend_address_pool_ass
   ip_configuration_name   = "nic-ipconfig-${count.index+1}"
   #backend_address_pool_id = azurerm_application_gateway.network.backend_address_pool
   backend_address_pool_id = azurerm_application_gateway.network.id
-}
+}*/
 
 resource "random_password" "password" {
   length = 16
   special = true
   lower = true
   upper = true
-  number = true
+  numeric = true
 }
 
 /*resource "azurerm_windows_virtual_machine" "vm" {

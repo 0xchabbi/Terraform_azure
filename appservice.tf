@@ -30,7 +30,16 @@ resource "azurerm_linux_web_app" "webapp" {
   site_config {             #that solves the error statuscode=0
     minimum_tls_version = "1.2"
     always_on           = false
+    #health_check_path = "/healhz"
+
+    application_stack {
+      docker_image = "docker.io/bitnami/nginx"
+      docker_image_tag = "latest"
+    }
   }
+app_settings = {
+WEBSITES_PORT = "8080"
+}
 }
 
 #  Deploy code from a public GitHub repo
