@@ -80,6 +80,11 @@ route {
 
   backend_address_pool {
     name = var.backend_address_pool_name
+    ip_addresses = []
+    
+    /*fqdns = [ "webapp-81772.azurewebsites.net" ]
+    id    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/backendAddressPools/myBackendPool"
+    */ #optional
   }
 
   backend_http_settings {
@@ -88,7 +93,32 @@ route {
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
+    host_name             = "webapp-81772.azurewebsites.net"
+    #id                    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/backendHttpSettingsCollection/myHTTPsetting"
+    pick_host_name_from_backend_address = false
+    #probe_id              = ""
+    probe_name            = "myhealth"
+    trusted_root_certificate_names = []
   }
+
+  probe {
+    host                  = "webapp-81772.azurewebsites.net"
+    #id                    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/probes/myhealth"
+    interval              = 10
+    #minimum_servers       = 0
+    name                  = "myhealth"
+    path                  = "/"
+    #pick_host_name_from_backend_http_settings = false
+    #port                  = 0
+    protocol              = "Http"
+    timeout               = 5
+    unhealthy_threshold   = 3
+
+    /*match {
+      status_code = []
+    } */
+    }    
+  
 
   http_listener {
     name                           = var.listener_name
