@@ -1,6 +1,7 @@
 ## Table of Contents
 1. [General Info](#general-info)
 2. [Installation](#installation)
+3. [Infrastructure](#infrastructure)
 
 ### General Info
 ***
@@ -34,3 +35,8 @@ $ terraform plan
 $ terraform apply
 
 Check your Azure subscribtion
+```
+## Infrastructure
+***
+
+myResourceGroup-81772.png
