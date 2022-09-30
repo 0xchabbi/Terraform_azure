@@ -45,7 +45,7 @@ resource "azurerm_public_ip" "pip1" {
   name                = "myAGPublicIPAddress-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
   sku                 = "Standard"
   domain_name_label = "my-test-81772"
 }
