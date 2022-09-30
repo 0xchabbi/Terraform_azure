@@ -4,7 +4,7 @@
 
 ### General Info
 ***
-Create a Terraform Script with a Azure AppService with a APIGateway to secure network connectivity. Through a terraform apply, the  script execute and build a resourcegroup, VNet, Appservice and a APIGateway. 
+Create a Terraform Script with a Azure AppService with a APIGateway to secure network connectivity. Through a terraform apply, the  script execute and build a resourcegroup, VNet, 2 Appservice with 2 different paths and a APIGateway. 
 
 
 

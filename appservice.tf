@@ -17,7 +17,7 @@ resource "azurerm_service_plan" "appserviceplan" {
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
   os_type             = "Linux"
-  sku_name            = "F1"
+  sku_name            = "B1"
 }
 
 # Create the web app, pass in the App Service Plan ID
@@ -30,6 +30,7 @@ resource "azurerm_linux_web_app" "webapp" {
   site_config {             #that solves the error statuscode=0
     minimum_tls_version = "1.2"
     always_on           = false
+    vnet_route_all_enabled = true
     #health_check_path = "/healhz"
 
     application_stack {

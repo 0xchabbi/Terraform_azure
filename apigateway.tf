@@ -30,13 +30,22 @@ resource "azurerm_subnet" "backend" {
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.1.0/24"]
+  delegation {
+    name = "delegation"
+    service_delegation {
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action",
+      ]
+      name = "Microsoft.Web/serverFarms"
+    }
+  }
 }
 
 resource "azurerm_public_ip" "pip1" {
   name                = "myAGPublicIPAddress-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
-  allocation_method   = "Static"
+  allocation_method   = "Dynamic"
   sku                 = "Standard"
   domain_name_label = "my-test-81772"
 }
@@ -57,10 +66,10 @@ route {
     next_hop_type  = "VnetLocal"
   }*/
 
-  sku {
+  sku {           #check which requirement you need to scale your sku
     name     = "Standard_v2"
     tier     = "Standard_v2"
-    capacity = 2
+    capacity = 1    #change capacity because of low requirement
   }
 
   gateway_ip_configuration {
@@ -81,29 +90,27 @@ route {
   backend_address_pool {
     name = var.backend_address_pool_name
     ip_addresses = []
-    
-    /*fqdns = [ "webapp-81772.azurewebsites.net" ]
-    id    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/backendAddressPools/myBackendPool"
-    */ #optional
+    fqdns = [
+      "webapp-81772.azurewebsites.net",
+      "webapp2-81772.azurewebsites.net",        
+    ]
   }
 
   backend_http_settings {
     name                  = var.http_setting_name
     cookie_based_affinity = "Disabled"
+    affinity_cookie_name  = "ApplicationGatewayAffinity"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
     host_name             = "webapp-81772.azurewebsites.net"
-    #id                    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/backendHttpSettingsCollection/myHTTPsetting"
     pick_host_name_from_backend_address = false
-    #probe_id              = ""
     probe_name            = "myhealth"
     trusted_root_certificate_names = []
   }
 
   probe {
     host                  = "webapp-81772.azurewebsites.net"
-    #id                    = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-81772/providers/Microsoft.Network/applicationGateways/myAppGateway-81772/probes/myhealth"
     interval              = 10
     #minimum_servers       = 0
     name                  = "myhealth"
@@ -114,9 +121,11 @@ route {
     timeout               = 5
     unhealthy_threshold   = 3
 
-    /*match {
-      status_code = []
-    } */
+    match {
+      status_code = [
+        "200-399",
+      ]
+      }
     }    
   
 
@@ -129,14 +138,45 @@ route {
   }
 
   request_routing_rule {
-    name                       = var.request_routing_rule_name
-    rule_type                  = "Basic"
+    name                       = "webapprouting" #var.request_routing_rule_name
+    rule_type                  = "PathBasedRouting"
     http_listener_name         = var.listener_name
     backend_address_pool_name  = var.backend_address_pool_name
     backend_http_settings_name = var.http_setting_name
-    priority = 10
+    priority                   = 10
+    url_path_map_name          = "webapprouting"
+  }
+
+  url_path_map {
+    default_backend_address_pool_name = "myBackendPool"
+    default_backend_http_settings_name = "myHTTPsetting"
+    name = "webapprouting"
+    path_rule {
+      backend_address_pool_name = var.backend_address_pool_name
+      backend_http_settings_name = "myHTTPsetting"
+      name = "webapp1"
+      paths = [
+        "/webapp1",
+      ]
+    }
+    path_rule {
+      backend_address_pool_name = var.backend_address_pool_name
+      backend_http_settings_name = "myHTTPsetting"
+      name = "webapp2"
+      paths = [
+        "/webapp2",
+      ]
+    }
   }
 }
+resource "random_password" "password" {
+  length = 16
+  special = true
+  lower = true
+  upper = true
+  numeric = true
+}
+
 
 /*resource "azurerm_network_interface" "nic" {
   count = 2
@@ -158,14 +198,6 @@ resource "azurerm_network_interface_application_gateway_backend_address_pool_ass
   #backend_address_pool_id = azurerm_application_gateway.network.backend_address_pool
   backend_address_pool_id = azurerm_application_gateway.network.id
 }*/
-
-resource "random_password" "password" {
-  length = 16
-  special = true
-  lower = true
-  upper = true
-  numeric = true
-}
 
 /*resource "azurerm_windows_virtual_machine" "vm" {
   count = 2
