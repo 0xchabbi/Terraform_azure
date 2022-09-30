@@ -21,7 +21,7 @@ resource "azurerm_linux_web_app" "webapp2" {
     #health_check_path = "/healhz"
 
     application_stack {
-      docker_image = "docker.io/bitnami/wordpress"
+      docker_image = "docker.io/bitnami/nginx"
       docker_image_tag = "latest"
     }
   }
