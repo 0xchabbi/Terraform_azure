@@ -42,12 +42,21 @@ resource "azurerm_subnet" "backend" {
 }
 
 resource "azurerm_public_ip" "pip1" {
-  name                = "myAGPublicIPAddress-${random_integer.ri.result}"
+  name                = "myAGPublicIPAddress-1-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label = "my-test-81772"
+  domain_name_label = "webapp1-81772"
+}
+
+resource "azurerm_public_ip" "pip2" {
+  name                = "myAGPublicIPAddress-2-${random_integer.ri.result}"
+  resource_group_name = azurerm_resource_group.rg1.name
+  location            = azurerm_resource_group.rg1.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  domain_name_label = "webapp2-81772"
 }
 
 
@@ -87,11 +96,23 @@ route {
     public_ip_address_id = azurerm_public_ip.pip1.id
   }
 
+/*frontend_ip_configuration { #geht nicht mehr als ein public ip
+    name                 = "frontendpip-2"
+    public_ip_address_id = azurerm_public_ip.pip2.id
+  }*/
+
   backend_address_pool {
     name = var.backend_address_pool_name
     ip_addresses = []
     fqdns = [
-      "webapp-81772.azurewebsites.net",
+      "webapp-81772.azurewebsites.net",        
+    ]
+  }
+
+  backend_address_pool {
+    name = "webapp2"
+    ip_addresses = []
+    fqdns = [
       "webapp2-81772.azurewebsites.net",        
     ]
   }
@@ -103,7 +124,7 @@ route {
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
-    host_name             = "webapp-81772.azurewebsites.net"
+    host_name             = "my-test-81772.westeurope.cloudapp.azure.com"
     pick_host_name_from_backend_address = false
     probe_name            = "myhealth"
     trusted_root_certificate_names = []
@@ -127,7 +148,37 @@ route {
       ]
       }
     }    
-  
+  backend_http_settings {
+    name                  = "webapp-2"
+    cookie_based_affinity = "Disabled"
+    affinity_cookie_name  = "ApplicationGatewayAffinity"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+    host_name             = "webapp2-81772.azurewebsites.net"
+    pick_host_name_from_backend_address = false
+    probe_name            = "myhealth-2"
+    trusted_root_certificate_names = []
+  }
+
+  probe {
+    host                  = "webapp2-81772.azurewebsites.net"
+    interval              = 10
+    #minimum_servers       = 0
+    name                  = "myhealth-2"
+    path                  = "/"
+    #pick_host_name_from_backend_http_settings = false
+    #port                  = 0
+    protocol              = "Http"
+    timeout               = 5
+    unhealthy_threshold   = 3
+
+    match {
+      status_code = [
+        "200-399",
+      ]
+      }
+    }    
 
   http_listener {
     name                           = var.listener_name
@@ -135,6 +186,14 @@ route {
     frontend_port_name             = var.frontend_port_name
     protocol                       = "Http"
     host_names = [ "my-test-81772.westeurope.cloudapp.azure.com" ]
+  }
+
+  http_listener {
+    name                           = "listener-2"
+    frontend_ip_configuration_name = var.frontend_ip_configuration_name
+    frontend_port_name             = var.frontend_port_name
+    protocol                       = "Http"
+    host_names = [ "webapp2-81772.azurewebsites.net" ]
   }
 
   request_routing_rule {
@@ -156,7 +215,7 @@ route {
       backend_http_settings_name = "myHTTPsetting"
       name = "webapp1"
       paths = [
-        "/webapp1",
+        "/*",
       ]
     }
     path_rule {
