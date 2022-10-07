@@ -27,6 +27,7 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name   = azurerm_resource_group.rg1.name
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   https_only            = true
+  virtual_network_subnet_id = "/subscriptions/8fdfcd42-cb6a-4f09-bd1d-984a332c84b1/resourceGroups/myResourceGroup-31905/providers/Microsoft.Network/virtualNetworks/myVNet-31905/subnets/myBackendSubnet-31905"
   site_config {             #that solves the error statuscode=0
     minimum_tls_version = "1.2"
     always_on           = false

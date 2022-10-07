@@ -96,7 +96,7 @@ route {
     public_ip_address_id = azurerm_public_ip.pip1.id
   }
 
-/*frontend_ip_configuration { #geht nicht mehr als ein public ip
+/*frontend_ip_configuration { #geht nicht mehr als ein ip frontend
     name                 = "frontendpip-2"
     public_ip_address_id = azurerm_public_ip.pip2.id
   }*/
@@ -206,6 +206,15 @@ route {
     url_path_map_name          = "webapprouting"
   }
 
+request_routing_rule {
+    name                       = "webapprouting2" #var.request_routing_rule_name
+    rule_type                  = "PathBasedRouting"
+    http_listener_name         = "listener-2"
+    backend_address_pool_name  = var.backend_address_pool_name
+    backend_http_settings_name = var.http_setting_name
+    priority                   = 11
+    url_path_map_name          = "webapprouting2"
+  }
   url_path_map {
     default_backend_address_pool_name = "myBackendPool"
     default_backend_http_settings_name = "myHTTPsetting"
@@ -218,6 +227,11 @@ route {
         "/*",
       ]
     }
+  }
+   url_path_map {
+    default_backend_address_pool_name = "webapp2"
+    default_backend_http_settings_name = "webapp-2"
+    name = "webapprouting2"
     path_rule {
       backend_address_pool_name = var.backend_address_pool_name
       backend_http_settings_name = "myHTTPsetting"
