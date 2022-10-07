@@ -30,15 +30,12 @@ resource "azurerm_subnet" "backend" {
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.1.0/24"]
-  delegation {
-    name = "delegation"
-    service_delegation {
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/action",
-      ]
-      name = "Microsoft.Web/serverFarms"
-    }
-  }
+
+  service_endpoints = [ 
+    "Microsoft.Storage",
+    "Microsoft.Web",
+   ]
+  
 }
 
 resource "azurerm_public_ip" "pip1" {
@@ -121,10 +118,10 @@ route {
     name                  = var.http_setting_name
     cookie_based_affinity = "Disabled"
     affinity_cookie_name  = "ApplicationGatewayAffinity"
-    port                  = 80
-    protocol              = "Http"
+    port                  = 443
+    protocol              = "Https"
     request_timeout       = 60
-    host_name             = "my-test-81772.westeurope.cloudapp.azure.com"
+    host_name             = "webapp-31905.azurewebsites.net"
     pick_host_name_from_backend_address = false
     probe_name            = "myhealth"
     trusted_root_certificate_names = []
@@ -138,7 +135,7 @@ route {
     path                  = "/"
     #pick_host_name_from_backend_http_settings = false
     #port                  = 0
-    protocol              = "Http"
+    protocol              = "Https"
     timeout               = 5
     unhealthy_threshold   = 3
 
@@ -152,8 +149,8 @@ route {
     name                  = "webapp-2"
     cookie_based_affinity = "Disabled"
     affinity_cookie_name  = "ApplicationGatewayAffinity"
-    port                  = 80
-    protocol              = "Http"
+    port                  = 443
+    protocol              = "Https"
     request_timeout       = 60
     host_name             = "webapp2-81772.azurewebsites.net"
     pick_host_name_from_backend_address = false
@@ -169,7 +166,7 @@ route {
     path                  = "/"
     #pick_host_name_from_backend_http_settings = false
     #port                  = 0
-    protocol              = "Http"
+    protocol              = "Https"
     timeout               = 5
     unhealthy_threshold   = 3
 
@@ -215,6 +212,7 @@ request_routing_rule {
     priority                   = 11
     url_path_map_name          = "webapprouting2"
   }
+  
   url_path_map {
     default_backend_address_pool_name = "myBackendPool"
     default_backend_http_settings_name = "myHTTPsetting"
@@ -233,8 +231,8 @@ request_routing_rule {
     default_backend_http_settings_name = "webapp-2"
     name = "webapprouting2"
     path_rule {
-      backend_address_pool_name = var.backend_address_pool_name
-      backend_http_settings_name = "myHTTPsetting"
+      backend_address_pool_name = "webapp2"
+      backend_http_settings_name = "webapp-2"
       name = "webapp2"
       paths = [
         "/webapp2",
