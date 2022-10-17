@@ -12,21 +12,21 @@
 }*/
 
 resource "azurerm_virtual_network" "vnet1" {
-  name                = "myVNet-${random_integer.ri.result}"
+  name                = "myVNet-31905"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   address_space       = ["10.21.0.0/16"]
 }
 
 resource "azurerm_subnet" "frontend" {
-  name                 = "myAGSubnet-${random_integer.ri.result}"
+  name                 = "myAGSubnet-31905"
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.0.0/24"]
 }
 
 resource "azurerm_subnet" "backend" {
-  name                 = "myBackendSubnet-${random_integer.ri.result}"
+  name                 = "myBackendSubnet-31905"
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.vnet1.name
   address_prefixes     = ["10.21.1.0/24"]
@@ -39,7 +39,7 @@ resource "azurerm_subnet" "backend" {
 }
 
 resource "azurerm_public_ip" "pip1" {
-  name                = "myAGPublicIPAddress-1-${random_integer.ri.result}"
+  name                = "myAGPublicIPAddress-1-31905"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
@@ -59,7 +59,7 @@ resource "azurerm_public_ip" "pip1" {
 
 
 resource "azurerm_application_gateway" "network" {
-  name                = "myAppGateway-${random_integer.ri.result}"
+  name                = "myAppGateway-31905"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   

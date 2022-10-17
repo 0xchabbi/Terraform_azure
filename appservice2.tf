@@ -9,7 +9,7 @@
 
 # Create the web app, pass in the App Service Plan ID
 resource "azurerm_linux_web_app" "webapp2" {
-  name                  = "webapp2-${random_integer.ri.result}"
+  name                  = "webapp2-31905"
   location              = azurerm_resource_group.rg1.location
   resource_group_name   = azurerm_resource_group.rg1.name
   service_plan_id       = azurerm_service_plan.appserviceplan.id

@@ -1,19 +1,19 @@
 
 # Generate a random integer to create a globally unique name
-resource "random_integer" "ri" { #dont use random integer if you build and destroy more than one time, could cause error because of different hostname(hostnumber)
+/*resource "random_integer" "ri" { #dont use random integer if you build and destroy more than one time, could cause error because of different hostname(hostnumber)
   min = 10000
   max = 99999
-}
+}*/
 
 # Create the resource group
 resource "azurerm_resource_group" "rg1" {
-  name     = "myResourceGroup-${random_integer.ri.result}"
+  name     = "myResourceGroup-31905"
   location = "westeurope"
 }
 
 # Create the Linux App Service Plan
 resource "azurerm_service_plan" "appserviceplan" {
-  name                = "webapp-asp-${random_integer.ri.result}"
+  name                = "webapp-asp-31905"
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
   os_type             = "Linux"
@@ -22,7 +22,7 @@ resource "azurerm_service_plan" "appserviceplan" {
 
 # Create the web app, pass in the App Service Plan ID
 resource "azurerm_linux_web_app" "webapp" {
-  name                  = "webapp-${random_integer.ri.result}"
+  name                  = "webapp-31905"
   location              = azurerm_resource_group.rg1.location
   resource_group_name   = azurerm_resource_group.rg1.name
   service_plan_id       = azurerm_service_plan.appserviceplan.id
