@@ -44,17 +44,17 @@ resource "azurerm_public_ip" "pip1" {
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label = "webapp1-81772"
+  domain_name_label = "webapp1-31905"
 }
 
-resource "azurerm_public_ip" "pip2" {
+/* resource "azurerm_public_ip" "pip2" {
   name                = "myAGPublicIPAddress-2-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.rg1.name
   location            = azurerm_resource_group.rg1.location
   allocation_method   = "Static"
   sku                 = "Standard"
   domain_name_label = "webapp2-81772"
-}
+} */
 
 
 
@@ -102,7 +102,7 @@ route {
     name = var.backend_address_pool_name
     ip_addresses = []
     fqdns = [
-      "webapp-81772.azurewebsites.net",        
+      "webapp-31905.azurewebsites.net",        
     ]
   }
 
@@ -110,7 +110,7 @@ route {
     name = "webapp2"
     ip_addresses = []
     fqdns = [
-      "webapp2-81772.azurewebsites.net",        
+      "webapp2-31905.azurewebsites.net",        
     ]
   }
 
@@ -128,7 +128,7 @@ route {
   }
 
   probe {
-    host                  = "webapp-81772.azurewebsites.net"
+    host                  = "webapp-31905.azurewebsites.net"
     interval              = 10
     #minimum_servers       = 0
     name                  = "myhealth"
@@ -136,7 +136,7 @@ route {
     #pick_host_name_from_backend_http_settings = false
     #port                  = 0
     protocol              = "Https"
-    timeout               = 5
+    timeout               = 30
     unhealthy_threshold   = 3
 
     match {
@@ -152,14 +152,14 @@ route {
     port                  = 443
     protocol              = "Https"
     request_timeout       = 60
-    host_name             = "webapp2-81772.azurewebsites.net"
+    host_name             = "webapp2-31905.azurewebsites.net"
     pick_host_name_from_backend_address = false
     probe_name            = "myhealth-2"
     trusted_root_certificate_names = []
   }
 
   probe {
-    host                  = "webapp2-81772.azurewebsites.net"
+    host                  = "webapp2-31905.azurewebsites.net"
     interval              = 10
     #minimum_servers       = 0
     name                  = "myhealth-2"
@@ -167,7 +167,7 @@ route {
     #pick_host_name_from_backend_http_settings = false
     #port                  = 0
     protocol              = "Https"
-    timeout               = 5
+    timeout               = 30
     unhealthy_threshold   = 3
 
     match {
@@ -182,7 +182,7 @@ route {
     frontend_ip_configuration_name = var.frontend_ip_configuration_name
     frontend_port_name             = var.frontend_port_name
     protocol                       = "Http"
-    host_names = [ "my-test-81772.westeurope.cloudapp.azure.com" ]
+    host_names = [ "webapp-31905.azurewebsites.net" ]
   }
 
   http_listener {
@@ -190,7 +190,7 @@ route {
     frontend_ip_configuration_name = var.frontend_ip_configuration_name
     frontend_port_name             = var.frontend_port_name
     protocol                       = "Http"
-    host_names = [ "webapp2-81772.azurewebsites.net" ]
+    host_names = [ "webapp2-31905.azurewebsites.net" ]
   }
 
   request_routing_rule {
@@ -202,18 +202,7 @@ route {
     priority                   = 10
     url_path_map_name          = "webapprouting"
   }
-
-request_routing_rule {
-    name                       = "webapprouting2" #var.request_routing_rule_name
-    rule_type                  = "PathBasedRouting"
-    http_listener_name         = "listener-2"
-    backend_address_pool_name  = var.backend_address_pool_name
-    backend_http_settings_name = var.http_setting_name
-    priority                   = 11
-    url_path_map_name          = "webapprouting2"
-  }
-  
-  url_path_map {
+ url_path_map {
     default_backend_address_pool_name = "myBackendPool"
     default_backend_http_settings_name = "myHTTPsetting"
     name = "webapprouting"
@@ -226,6 +215,18 @@ request_routing_rule {
       ]
     }
   }
+request_routing_rule {
+    name                       = "webapprouting2" #var.request_routing_rule_name
+    rule_type                  = "PathBasedRouting"
+    http_listener_name         = "listener-2"
+    backend_address_pool_name  = "webapp2"
+    backend_http_settings_name = "webapp-2"
+    priority                   = 11
+    url_path_map_name          = "webapprouting2"
+  }
+  
+  
+ 
    url_path_map {
     default_backend_address_pool_name = "webapp2"
     default_backend_http_settings_name = "webapp-2"
@@ -235,9 +236,9 @@ request_routing_rule {
       backend_http_settings_name = "webapp-2"
       name = "webapp2"
       paths = [
-        "/webapp2",
+        "/*",
       ]
-    }
+    } 
   }
 }
 resource "random_password" "password" {

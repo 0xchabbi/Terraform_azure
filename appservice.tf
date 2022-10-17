@@ -1,6 +1,6 @@
 
 # Generate a random integer to create a globally unique name
-resource "random_integer" "ri" {
+resource "random_integer" "ri" { #dont use random integer if you build and destroy more than one time, could cause error because of different hostname(hostnumber)
   min = 10000
   max = 99999
 }

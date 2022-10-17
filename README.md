@@ -40,3 +40,12 @@ Check your Azure subscribtion
 ***
 
 myResourceGroup-81772.png
+
+***
+How to solve the unhealthy backend-status?
+-> The important steps is to check if the right FQNS are adressed in the backend_address_pool, this could be a litte chaotic if you have to or more services. 
+-> At the probe section check the host names, they should be the same as the one in the backend_address_pool. 
+The timeout section should be 30 or over. If the timeout is set on 6 or lower there is no time to check the response and get a healthy status (200)
+->http_listener should have the same hostnames as the backend and the probe.
+Important Note: Every Host-name should be the same (for each appService for example: AppService 1 -> all host name config for AppService 1 should be the same) 
+                For AppService 2 the same example.
